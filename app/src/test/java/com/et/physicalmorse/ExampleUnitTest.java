@@ -1,4 +1,4 @@
-package com.example.et.physicalmorse;
+package com.et.physicalmorse;
 
 import org.junit.Test;
 

@@ -2,6 +2,7 @@ package com.et.physicalmorse;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.hardware.Camera;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.security.Policy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button button;
     private static final int REQUEST_CODE_CAMERA = 9;
     private boolean getPermission = false;
+    private Camera camera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,61 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        encodeData(editText.getText().toString().trim());
+
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                open();
+//                try {
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                close();
+//
+//            }
+//        }).start();
+    }
+
+    private void encodeData(String trim) {
+        String encode = MorseUtil.encode(trim);
 
     }
+
+    /**
+     * 打开闪光灯
+     *
+     * @return
+     */
+    private void open() {
+        try {
+            camera = Camera.open();
+            camera.startPreview();
+            Camera.Parameters parameters = camera.getParameters();
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            camera.setParameters(parameters);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 关闭闪光灯
+     *
+     * @return
+     */
+    private void close() {
+        try {
+            Camera.Parameters parameters = camera.getParameters();
+            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            camera.setParameters(parameters);
+            camera.release();
+            camera = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

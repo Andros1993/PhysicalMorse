@@ -101,8 +101,8 @@ public class MorseUtil {
 
         StringBuilder builder = new StringBuilder();
         message = message.toUpperCase();
-        for (int i = 0; i < message.codePointCount(0, message.length()); i++) {
-            int codePoint = message.codePointAt(i);
+        for (int i = 0; i < message.toCharArray().length; i++) {
+            char codePoint = message.toCharArray()[i];
             String word = dictionaries.get(codePoint);
             if (word == null) {
                 word = Integer.toBinaryString(codePoint);

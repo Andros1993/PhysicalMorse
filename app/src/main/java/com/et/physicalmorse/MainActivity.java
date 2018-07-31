@@ -9,7 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.security.Policy;
@@ -23,9 +25,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private EditText editText;
     private Button button;
+    private Switch mSwitch;
     private static final int REQUEST_CODE_CAMERA = 9;
     private boolean getPermission = false;
     private Camera camera;
+    private boolean isLoop = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         editText = findViewById(R.id.et_data_input);
         button = findViewById(R.id.bt_trigger);
+        mSwitch = findViewById(R.id.sw_loop);
+        mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isLoop = b;
+            }
+        });
 
         button.setOnClickListener(this);
         requestPermission();
@@ -75,22 +86,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(MainActivity.this, "this app need camera permission!", Toast.LENGTH_LONG).show();
             return;
         }
+        String trim = editText.getText().toString().trim();
+        if (trim == null || "".equalsIgnoreCase(trim)) {
+            Toast.makeText(MainActivity.this, "message can not be null !", Toast.LENGTH_LONG).show();
+            return;
+        }
+        encodeData(trim);
 
-        encodeData(editText.getText().toString().trim());
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                open();
-//                try {
-//                    Thread.sleep(500);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                close();
-//
-//            }
-//        }).start();
     }
 
     private void encodeData(String trim) {
@@ -100,16 +102,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                for (FlashUtil.FlashBean bean : flashData) {
-                    if (bean.isFlag()) {
-                        open();
-                        goSleep(bean.getTime());
-                    } else {
-                        close();
-                        goSleep(bean.getTime());
+                do {
+                    for (FlashUtil.FlashBean bean : flashData) {
+                        if (bean.isFlag()) {
+                            open();
+                            goSleep(bean.getTime());
+                        } else {
+                            close();
+                            goSleep(bean.getTime());
+                        }
                     }
-                }
-                close();
+                    close();
+                    goSleep(1300);
+                } while (isLoop);
             }
         }).start();
     }
@@ -139,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void close() {
         try {
+            if (camera == null) {
+                return;
+            }
             Camera.Parameters parameters = camera.getParameters();
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             camera.setParameters(parameters);

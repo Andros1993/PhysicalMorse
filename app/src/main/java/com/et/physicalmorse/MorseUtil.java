@@ -10,9 +10,9 @@ public class MorseUtil {
 
     private static HashMap<Character, String> dictionaries = new HashMap<Character, String>();
     private volatile static MorseUtil instance;
-    private static final char dit = '.';
-    private static final char dah = '-';
-    private static final char split = '/';
+    public static final char dit = '.';
+    public static final char dah = '-';
+    public static final char split = '/';
 
     static {
         // Letters
@@ -101,13 +101,12 @@ public class MorseUtil {
 
         StringBuilder builder = new StringBuilder();
         message = message.toUpperCase();
-        for (int i = 0; i < message.toCharArray().length; i++) {
+        for (int i = 0; i < message.toCharArray().length; i++) { //分解每个字符
             char codePoint = message.toCharArray()[i];
-            String word = dictionaries.get(codePoint);
-            if (word == null) {
-                word = Integer.toBinaryString(codePoint);
+            String word = dictionaries.get(codePoint); //根据key值获取对应的value值
+            if (word != null) {
+                builder.append(word.replace('0', dit).replace('1', dah)).append(split); //如果有值，则将0和1替换成.和-。并在每个字符结尾加上/
             }
-            builder.append(word.replace('0', dit).replace('1', dah)).append(split);
         }
         return builder.toString();
     }

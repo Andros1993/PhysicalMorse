@@ -14,7 +14,10 @@ import android.widget.Toast;
 
 import java.security.Policy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -92,7 +95,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void encodeData(String trim) {
         String encode = MorseUtil.encode(trim);
+        final ArrayList<FlashUtil.FlashBean> flashData = FlashUtil.getFlashData(encode);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (FlashUtil.FlashBean bean : flashData) {
+                    if (bean.isFlag()) {
+                        open();
+                        goSleep(bean.getTime());
+                    } else {
+                        close();
+                        goSleep(bean.getTime());
+                    }
+                }
+                close();
+            }
+        }).start();
     }
 
     /**
@@ -126,6 +145,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             camera.release();
             camera = null;
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void goSleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

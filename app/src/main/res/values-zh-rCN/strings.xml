@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">物理摩尔斯</string>
+
+    <string name="tip_input_data">请输入数据</string>
+    <string name="bt_play">播放</string>
+    <string name="sw_redo">重复</string>
+
+    <string name="tip_permission_request">本应用需要相机权限</string>
+    <string name="tip_input_request">信息不能为空</string>
+    <string name="tip_not_support_cn">暂时不支持中文哦</string>
+</resources>

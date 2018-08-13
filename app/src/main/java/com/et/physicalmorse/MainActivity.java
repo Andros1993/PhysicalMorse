@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -34,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
         initView();
     }
 
@@ -83,12 +84,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if (!getPermission) {
-            Toast.makeText(MainActivity.this, "this app need camera permission!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, getString(R.string.tip_permission_request), Toast.LENGTH_LONG).show();
             return;
         }
         String trim = editText.getText().toString().trim();
         if (trim == null || "".equalsIgnoreCase(trim)) {
-            Toast.makeText(MainActivity.this, "message can not be null !", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, getString(R.string.tip_input_request), Toast.LENGTH_LONG).show();
             return;
         }
         encodeData(trim);
@@ -96,6 +97,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void encodeData(String trim) {
+        if (MorseUtil.isChinese(trim)) {
+            Toast.makeText(this, getString(R.string.tip_not_support_cn), Toast.LENGTH_LONG).show();
+            return;
+        }
+
         String encode = MorseUtil.encode(trim);
         final ArrayList<FlashUtil.FlashBean> flashData = FlashUtil.getFlashData(encode);
 

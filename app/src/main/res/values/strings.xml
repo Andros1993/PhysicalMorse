@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">PhysicalMorse</string>
+    <string name="tip_input_data">Please input the data</string>
+    <string name="bt_play">Play</string>
+    <string name="sw_redo">Redo</string>
+    <string name="tip_permission_request">This app need camera permission!</string>
+    <string name="tip_input_request">Message can not be null !</string>
+
+    <string name="tip_not_support_cn">Can not support Chinese for the time being</string>
+
 </resources>
